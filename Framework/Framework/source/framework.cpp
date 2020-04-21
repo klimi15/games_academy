@@ -5,19 +5,19 @@
 #include "sound.hpp"
 #include "timer.hpp"
 
-GamesAcademy::Graphics* getGraphicsClass( ga_graphics_t* pGraphics )
+GamesAcademy::Graphics* getGraphicsClass( ga_graphics_t* graphics )
 {
-	return (GamesAcademy::Graphics*)pGraphics;
+	return (GamesAcademy::Graphics*)graphics;
 }
 
-GamesAcademy::Input* getInputClass( ga_input_t* pInput )
+GamesAcademy::Input* getInputClass( ga_input_t* input )
 {
-	return (GamesAcademy::Input*)pInput;
+	return (GamesAcademy::Input*)input;
 }
 
-GamesAcademy::Sound* getSoundClass( ga_sound_t* pSound )
+GamesAcademy::Sound* getSoundClass( ga_sound_t* sound )
 {
-	return (GamesAcademy::Sound*)pSound;
+	return (GamesAcademy::Sound*)sound;
 }
 
 ga_timer_t* GA_CDECL ga_timer_create()
@@ -27,15 +27,15 @@ ga_timer_t* GA_CDECL ga_timer_create()
 	return (ga_timer_t*)pCppTimer;
 }
 
-void GA_CDECL ga_timer_destroy( ga_timer_t* pTimer )
+void GA_CDECL ga_timer_destroy( ga_timer_t* timer )
 {
-	GamesAcademy::Timer* pCppTimer = (GamesAcademy::Timer*)pTimer;
+	GamesAcademy::Timer* pCppTimer = (GamesAcademy::Timer*)timer;
 	delete pCppTimer;
 }
 
-double GA_CDECL ga_timer_get( ga_timer_t* pTimer )
+double GA_CDECL ga_timer_get( ga_timer_t* timer )
 {
-	GamesAcademy::Timer* pCppTimer = (GamesAcademy::Timer*)pTimer;
+	GamesAcademy::Timer* pCppTimer = (GamesAcademy::Timer*)timer;
 	return pCppTimer->get();
 }
 
@@ -51,51 +51,51 @@ ga_graphics_t* GA_CDECL ga_graphics_create( int windowWidth, int windowHeight, c
 	return (ga_graphics_t*)pCppGraphics;
 }
 
-void GA_CDECL ga_graphics_destroy( ga_graphics_t* pGraphics )
+void GA_CDECL ga_graphics_destroy( ga_graphics_t* graphics )
 {
-	GamesAcademy::Graphics* pCppGraphics = getGraphicsClass( pGraphics );
+	GamesAcademy::Graphics* pCppGraphics = getGraphicsClass( graphics );
 	pCppGraphics->destroy();
 	delete pCppGraphics;
 }
 
-bool GA_CDECL ga_graphics_is_window_open( ga_graphics_t* pGraphics )
+bool GA_CDECL ga_graphics_is_window_open( ga_graphics_t* graphics )
 {
-	return getGraphicsClass( pGraphics )->isWindowOpen();
+	return getGraphicsClass( graphics )->isWindowOpen();
 }
 
-float GA_CDECL ga_graphics_get_back_buffer_width( ga_graphics_t* pGraphics )
+float GA_CDECL ga_graphics_get_back_buffer_width( ga_graphics_t* graphics )
 {
-	return getGraphicsClass( pGraphics )->getBackBufferWidth();
+	return getGraphicsClass( graphics )->getBackBufferWidth();
 }
 
-float GA_CDECL ga_graphics_get_back_buffer_height( ga_graphics_t* pGraphics )
+float GA_CDECL ga_graphics_get_back_buffer_height( ga_graphics_t* graphics )
 {
-	return getGraphicsClass( pGraphics )->getBackBufferHeight();
+	return getGraphicsClass( graphics )->getBackBufferHeight();
 }
 
-void GA_CDECL ga_graphics_begin_frame( ga_graphics_t* pGraphics )
+void GA_CDECL ga_graphics_begin_frame( ga_graphics_t* graphics )
 {
-	getGraphicsClass( pGraphics )->beginFrame();
+	getGraphicsClass( graphics )->beginFrame();
 }
 
-void GA_CDECL ga_graphics_clear( ga_graphics_t* pGraphics, ga_graphics_color color )
+void GA_CDECL ga_graphics_clear( ga_graphics_t* graphics, ga_graphics_color color )
 {
-	getGraphicsClass( pGraphics )->clear( color );
+	getGraphicsClass( graphics )->clear( color );
 }
 
-void GA_CDECL ga_graphics_draw_rect( ga_graphics_t* pGraphics, float x, float y, float width, float height, ga_graphics_color color )
+void GA_CDECL ga_graphics_draw_rect( ga_graphics_t* graphics, float x, float y, float width, float height, ga_graphics_color color )
 {
-	getGraphicsClass( pGraphics )->drawRect( x, y, width, height, color );
+	getGraphicsClass( graphics )->drawRect( x, y, width, height, color );
 }
 
-void GA_CDECL ga_graphics_draw_triangle( ga_graphics_t* pGraphics, float x1, float y1, float x2, float y2, float x3, float y3, ga_graphics_color color )
+void GA_CDECL ga_graphics_draw_triangle( ga_graphics_t* graphics, float x1, float y1, float x2, float y2, float x3, float y3, ga_graphics_color color )
 {
-	getGraphicsClass( pGraphics )->drawTriangle( x1, y1, x2, y2, x3, y3, color );
+	getGraphicsClass( graphics )->drawTriangle( x1, y1, x2, y2, x3, y3, color );
 }
 
-void GA_CDECL ga_graphics_end_frame( ga_graphics_t* pGraphics )
+void GA_CDECL ga_graphics_end_frame( ga_graphics_t* graphics )
 {
-	getGraphicsClass( pGraphics )->endFrame();
+	getGraphicsClass( graphics )->endFrame();
 }
 
 ga_graphics_color GA_CDECL ga_graphics_color_rgb( uint8_t r, uint8_t g, uint8_t b )
@@ -118,10 +118,10 @@ ga_graphics_color GA_CDECL ga_graphics_color_rgba_float( float r, float g, float
 	return ga_graphics_color_rgba( uint8_t( r * 255.0f ), uint8_t( g * 255.0f ), uint8_t( b * 255.0f ), uint8_t( a * 255.0f ) );
 }
 
-ga_input_t* GA_CDECL ga_input_create( ga_graphics_t* pGraphics )
+ga_input_t* GA_CDECL ga_input_create( ga_graphics_t* graphics )
 {
 	GamesAcademy::Input* pCppInput = new GamesAcademy::Input();
-	if( !pCppInput->create( getGraphicsClass( pGraphics ) ) )
+	if( !pCppInput->create( getGraphicsClass( graphics ) ) )
 	{
 		delete pCppInput;
 		return nullptr;
@@ -130,56 +130,56 @@ ga_input_t* GA_CDECL ga_input_create( ga_graphics_t* pGraphics )
 	return (ga_input_t*)pCppInput;
 }
 
-void GA_CDECL ga_input_destroy( ga_input_t* pInput )
+void GA_CDECL ga_input_destroy( ga_input_t* input )
 {
-	GamesAcademy::Input* pCppInput = getInputClass( pInput );
+	GamesAcademy::Input* pCppInput = getInputClass( input );
 	pCppInput->destroy();
 	delete pCppInput;
 }
 
-void GA_CDECL ga_input_update( ga_input_t* pInput )
+void GA_CDECL ga_input_update( ga_input_t* input )
 {
-	getInputClass( pInput )->update();
+	getInputClass( input )->update();
 }
 
-float GA_CDECL ga_input_get_mouse_delta_x( ga_input_t* pInput )
+float GA_CDECL ga_input_get_mouse_delta_x( ga_input_t* input )
 {
-	return getInputClass( pInput )->getMouseDeltaX();
+	return getInputClass( input )->getMouseDeltaX();
 }
 
-float GA_CDECL ga_input_get_mouse_delta_y( ga_input_t* pInput )
+float GA_CDECL ga_input_get_mouse_delta_y( ga_input_t* input )
 {
-	return getInputClass( pInput )->getMouseDeltaY();
+	return getInputClass( input )->getMouseDeltaY();
 }
 
-float GA_CDECL ga_input_get_mouse_position_x( ga_input_t* pInput )
+float GA_CDECL ga_input_get_mouse_position_x( ga_input_t* input )
 {
-	return getInputClass( pInput )->getMousePositionX();
+	return getInputClass( input )->getMousePositionX();
 }
 
-float GA_CDECL ga_input_get_mouse_position_y( ga_input_t* pInput )
+float GA_CDECL ga_input_get_mouse_position_y( ga_input_t* input )
 {
-	return getInputClass( pInput )->getMousePositionY();
+	return getInputClass( input )->getMousePositionY();
 }
 
-bool GA_CDECL ga_input_is_mouse_button_down( ga_input_t* pInput, ga_input_mouse_button button )
+bool GA_CDECL ga_input_is_mouse_button_down( ga_input_t* input, ga_input_mouse_button button )
 {
-	return getInputClass( pInput )->isMouseButtonDown( button );
+	return getInputClass( input )->isMouseButtonDown( button );
 }
 
-bool GA_CDECL ga_input_is_mouse_button_up( ga_input_t* pInput, ga_input_mouse_button button )
+bool GA_CDECL ga_input_is_mouse_button_up( ga_input_t* input, ga_input_mouse_button button )
 {
-	return getInputClass( pInput )->isMouseButtonUp( button );
+	return getInputClass( input )->isMouseButtonUp( button );
 }
 
-bool GA_CDECL ga_input_was_mouse_button_pressed( ga_input_t* pInput, ga_input_mouse_button button )
+bool GA_CDECL ga_input_was_mouse_button_pressed( ga_input_t* input, ga_input_mouse_button button )
 {
-	return getInputClass( pInput )->wasMouseButtonPressed( button );
+	return getInputClass( input )->wasMouseButtonPressed( button );
 }
 
-bool GA_CDECL ga_input_was_mouse_button_released( ga_input_t* pInput, ga_input_mouse_button button )
+bool GA_CDECL ga_input_was_mouse_button_released( ga_input_t* input, ga_input_mouse_button button )
 {
-	return getInputClass( pInput )->wasMouseButtonReleased( button );
+	return getInputClass( input )->wasMouseButtonReleased( button );
 }
 
 ga_sound_t* GA_CDECL ga_sound_create()
@@ -194,24 +194,24 @@ ga_sound_t* GA_CDECL ga_sound_create()
 	return (ga_sound_t*)pCppSound;
 }
 
-void GA_CDECL ga_sound_destroy( ga_sound_t* pSound )
+void GA_CDECL ga_sound_destroy( ga_sound_t* sound )
 {
-	GamesAcademy::Sound* pCppSound = getSoundClass( pSound );
+	GamesAcademy::Sound* pCppSound = getSoundClass( sound );
 	pCppSound->destroy();
 	delete pCppSound;
 }
 
-ga_sound_file_t* GA_CDECL ga_sound_load_file( ga_sound_t* pSound, const char* pFilename )
+ga_sound_file_t* GA_CDECL ga_sound_load_file( ga_sound_t* sound, const char* pFilename )
 {
-	return (ga_sound_file_t*)getSoundClass( pSound )->loadFile( pFilename );
+	return (ga_sound_file_t*)getSoundClass( sound )->loadFile( pFilename );
 }
 
-void GA_CDECL ga_sound_free_file( ga_sound_t* pSound, ga_sound_file_t* pFile )
+void GA_CDECL ga_sound_free_file( ga_sound_t* sound, ga_sound_file_t* pFile )
 {
-	getSoundClass( pSound )->freeFile( pFile );
+	getSoundClass( sound )->freeFile( pFile );
 }
 
-void GA_CDECL ga_sound_play( ga_sound_t* pSound, ga_sound_file_t* pFile )
+void GA_CDECL ga_sound_play( ga_sound_t* sound, ga_sound_file_t* pFile )
 {
-	getSoundClass( pSound )->play( pFile );
+	getSoundClass( sound )->play( pFile );
 }

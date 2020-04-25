@@ -28,10 +28,10 @@ namespace GamesAcademy
 
 	private:
 
-		Graphics*				m_pGraphics;
+		Graphics*				m_pGraphics		= nullptr;
 
-		IDirectInputA*			m_pInputDevice;
-		IDirectInputDeviceA*	m_pMouse;
+		IDirectInputA*			m_pInputDevice	= nullptr;
+		IDirectInputDeviceA*	m_pMouse		= nullptr;
 
 		POINT					m_mousePosition;
 		DIMOUSESTATE2			m_lastMouseState;

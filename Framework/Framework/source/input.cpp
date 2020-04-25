@@ -4,7 +4,6 @@
 
 namespace GamesAcademy
 {
-
 	bool Input::create( Graphics* pGraphics )
 	{
 		m_pGraphics = pGraphics;
@@ -50,6 +49,8 @@ namespace GamesAcademy
 			m_pInputDevice->Release();
 			m_pInputDevice = nullptr;
 		}
+
+		m_pGraphics = nullptr;
 	}
 
 	void Input::update()

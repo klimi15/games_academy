@@ -151,11 +151,11 @@ namespace GamesAcademy
 		free( pFile );
 	}
 
-	void Sound::play( void* pFile )
+	void* Sound::play( void* pFile )
 	{
 		if( pFile == nullptr )
 		{
-			return;
+			return nullptr;
 		}
 
 		SoundInstance* pInstance = new SoundInstance();
@@ -166,7 +166,7 @@ namespace GamesAcademy
 		{
 			MessageBoxW( nullptr, L"Failed to create Voice.", L"Framework", MB_ICONSTOP );
 			delete pInstance;
-			return;
+			return nullptr;
 		}
 
 		XAUDIO2_BUFFER buffer = {};
@@ -180,7 +180,7 @@ namespace GamesAcademy
 			MessageBoxW( nullptr, L"Failed to submit Sound Buffer.", L"Framework", MB_ICONSTOP );
 			pInstance->pVoice->DestroyVoice();
 			delete pInstance;
-			return;
+			return nullptr;
 		}
 
 		result = pInstance->pVoice->Start();
@@ -189,11 +189,39 @@ namespace GamesAcademy
 			MessageBoxW( nullptr, L"Failed to start Sound.", L"Framework", MB_ICONSTOP );
 			pInstance->pVoice->DestroyVoice();
 			delete pInstance;
-			return;
+			return nullptr;
 		}
 
 		pInstance->pNext = m_pFirstInstance;
 		m_pFirstInstance = pInstance;
+
+		return pInstance;
+	}
+
+	void Sound::stop( void* pVoice )
+	{
+		if( pVoice == nullptr )
+		{
+			return;
+		}
+
+		SoundInstance* pInstance = (SoundInstance*)pVoice;
+		pInstance->pVoice->Stop();
+	}
+
+	bool Sound::isPlaying( void* pVoice )
+	{
+		if( pVoice == nullptr )
+		{
+			return false;
+		}
+
+		SoundInstance* pInstance = (SoundInstance*)pVoice;
+
+		XAUDIO2_VOICE_STATE state;
+		pInstance->pVoice->GetState( &state );
+
+		return state.BuffersQueued > 0;
 	}
 
 	bool Sound::findChunk( FILE* pFile, uint32_t fourcc, size_t& chunkDataSize, size_t& chunkDataPosition )

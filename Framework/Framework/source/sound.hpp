@@ -18,7 +18,9 @@ namespace GamesAcademy
 		void*					loadFile( const char* pFilename );
 		void					freeFile( void* pFile );
 
-		void					play( void* pFile );
+		void*					play( void* pFile );
+		void					stop( void* pVoice );
+		bool					isPlaying( void* pVoice );
 
 	private:
 

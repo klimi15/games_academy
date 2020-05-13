@@ -3,12 +3,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#ifdef __cplusplus
-#	define GA_CDECL __stdcall
-#else
-#	define GA_CDECL
-#endif
-
+#define GA_CDECL __stdcall
 
 #ifdef __cplusplus
 extern "C"
@@ -63,12 +58,12 @@ ga_graphics_color	GA_CDECL ga_graphics_color_rgba_float( float r, float g, float
 struct ga_input;
 typedef struct ga_input ga_input_t;
 
-enum ga_input_mouse_button
+typedef enum ga_input_mouse_button
 {
 	ga_input_mouse_button_left,
 	ga_input_mouse_button_right,
 	ga_input_mouse_button_middle
-};
+} ga_input_mouse_button;
 
 ga_input_t*			GA_CDECL ga_input_create( ga_graphics_t* graphics );
 void				GA_CDECL ga_input_destroy( ga_input_t* input );
@@ -95,14 +90,18 @@ typedef struct ga_sound ga_sound_t;
 struct ga_sound_file;
 typedef struct ga_sound_file ga_sound_file_t;
 
+struct ga_sound_voice;
+typedef struct ga_sound_voice ga_sound_voice_t;
+
 ga_sound_t*			GA_CDECL ga_sound_create();
 void				GA_CDECL ga_sound_destroy( ga_sound_t* sound );
 
-ga_sound_file_t*	GA_CDECL ga_sound_load_file( ga_sound_t* sound, const char* pFilename );	// load a WAV file into memory for later playback
-void				GA_CDECL ga_sound_free_file( ga_sound_t* sound, ga_sound_file_t* pFile );
+ga_sound_file_t*	GA_CDECL ga_sound_load_file( ga_sound_t* sound, const char* filename );	// load a WAV file into memory for later playback
+void				GA_CDECL ga_sound_free_file( ga_sound_t* sound, ga_sound_file_t* file );
 
-void				GA_CDECL ga_sound_play( ga_sound_t* sound, ga_sound_file_t* pFile );
-
+ga_sound_voice_t*	GA_CDECL ga_sound_play( ga_sound_t* sound, ga_sound_file_t* file );
+void				GA_CDECL ga_sound_stop( ga_sound_t* sound, ga_sound_voice_t* voice );
+bool				GA_CDECL ga_sound_is_playing( ga_sound_t* sound, ga_sound_voice_t* voice );
 
 #ifdef __cplusplus
 }

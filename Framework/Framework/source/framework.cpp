@@ -206,12 +206,22 @@ ga_sound_file_t* GA_CDECL ga_sound_load_file( ga_sound_t* sound, const char* pFi
 	return (ga_sound_file_t*)getSoundClass( sound )->loadFile( pFilename );
 }
 
-void GA_CDECL ga_sound_free_file( ga_sound_t* sound, ga_sound_file_t* pFile )
+void GA_CDECL ga_sound_free_file( ga_sound_t* sound, ga_sound_file_t* file )
 {
-	getSoundClass( sound )->freeFile( pFile );
+	getSoundClass( sound )->freeFile( file );
 }
 
-void GA_CDECL ga_sound_play( ga_sound_t* sound, ga_sound_file_t* pFile )
+ga_sound_voice_t* GA_CDECL ga_sound_play( ga_sound_t* sound, ga_sound_file_t* file )
 {
-	getSoundClass( sound )->play( pFile );
+	return (ga_sound_voice_t*)getSoundClass( sound )->play( file );
+}
+
+void GA_CDECL ga_sound_stop( ga_sound_t* sound, ga_sound_voice_t* voice )
+{
+	getSoundClass( sound )->stop( voice );
+}
+
+bool GA_CDECL ga_sound_is_playing( ga_sound_t* sound, ga_sound_voice_t* voice )
+{
+	return getSoundClass( sound )->isPlaying( voice );
 }

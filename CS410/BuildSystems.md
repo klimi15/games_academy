@@ -37,3 +37,9 @@ Achtet auf eure Build Zeiten: https://artificial-mind.net/projects/compile-healt
 - Meta-Build-System 
 - Limitiert auf vorgegebene Systeme 
 - Link: https://github.com/bkaradzic/GENie 
+
+## IncrediBuild
+
+- Kostet Geld
+- Einfach
+- Link: https://www.incredibuild.com/

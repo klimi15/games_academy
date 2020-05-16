@@ -1,5 +1,7 @@
 # Build Systems 
 
+Achtet auf eure Build Zeiten: https://artificial-mind.net/projects/compile-health/
+
 ## MSBuild 
 
 - Einfach zu benutzen 

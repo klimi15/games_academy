@@ -121,8 +121,27 @@ namespace GamesAcademy
 	}
 
 	template< class T >
+	T& DynamicArray<T>::pushFront()
+	{
+		reserve( m_length + 1u );
+		memcpy( get( 1u ), get( 0u ), m_length * sizeof( T ) );
+		m_length++;
+
+		T* pElement = get( 0u );
+		new( pElement ) T;
+		return *pElement;
+	}
+
+	template< class T >
+	void DynamicArray<T>::pushFront( const T& value )
+	{
+		pushFront() = value;
+	}
+
+	template< class T >
 	void DynamicArray<T>::popBack()
 	{
+		assert( m_length > 0u );
 		resize( m_length - 1u );
 	}
 
@@ -134,8 +153,24 @@ namespace GamesAcademy
 	}
 
 	template< class T >
+	void DynamicArray<T>::popFront()
+	{
+		assert( m_length > 0u );
+		removeSortedByIndex( 0u );
+	}
+
+	template< class T >
+	void DynamicArray<T>::popFront( T& target )
+	{
+		target = *get( 0u );
+		popFront();
+	}
+
+	template< class T >
 	void DynamicArray<T>::removeSortedByIndex( size_t index )
 	{
+		assert( index < m_length );
+
 		get( index )->~T();
 
 		for( size_t i = index + 1u; i < m_length; ++i )
@@ -149,6 +184,8 @@ namespace GamesAcademy
 	template< class T >
 	void DynamicArray<T>::removeUnsortedByIndex( size_t index )
 	{
+		assert( index < m_length );
+
 		T* pElement = get( index );
 		pElement->~T();
 		memcpy( get( m_length - 1u ), pElement, sizeof( T ) );

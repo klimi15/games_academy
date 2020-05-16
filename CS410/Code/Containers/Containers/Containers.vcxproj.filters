@@ -7,4 +7,7 @@
     <ClInclude Include="DynamicArray.h" />
     <ClInclude Include="DynamicArray.inl" />
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="Container.natvis" />
+  </ItemGroup>
 </Project>

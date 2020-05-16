@@ -24,8 +24,13 @@ namespace GamesAcademy
 
 		T&			pushBack();
 		void		pushBack( const T& value );
+		T&			pushFront();
+		void		pushFront( const T& value );
+
 		void		popBack();
 		void		popBack( T& target );
+		void		popFront();
+		void		popFront( T& target );
 
 		void		removeSortedByIndex( size_t index );
 		void		removeUnsortedByIndex( size_t index );

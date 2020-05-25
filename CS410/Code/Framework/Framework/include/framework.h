@@ -34,6 +34,7 @@ ga_graphics_t*		GA_CDECL ga_graphics_create( int windowWidth, int windowHeight, 
 void				GA_CDECL ga_graphics_destroy( ga_graphics_t* graphics );
 
 bool				GA_CDECL ga_graphics_is_window_open( ga_graphics_t* graphics );
+void				GA_CDECL ga_graphics_set_window_title( ga_graphics_t* graphics, const char* pWindowTitleUtf8 );
 
 float				GA_CDECL ga_graphics_get_back_buffer_width( ga_graphics_t* graphics );
 float				GA_CDECL ga_graphics_get_back_buffer_height( ga_graphics_t* graphics );

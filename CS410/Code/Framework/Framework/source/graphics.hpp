@@ -16,6 +16,7 @@ namespace GamesAcademy
 		HWND						getWindowHandle() const { return m_windowHandle; }
 		bool						isWindowOpen() const { return m_running; }
 		void						closeWindow() { m_running = false; }
+		void						setWindowTitle( const char* pWindowTitleUtf8 );
 
 		float						getBackBufferWidth() const { return float( m_windowClientWidth ); }
 		float						getBackBufferHeight() const { return float( m_windowClientHeight ); }

@@ -17,9 +17,9 @@ namespace GamesAcademy
 		float		projection[ 4u ][ 4u ];
 	};
 
-	bool Graphics::create( int windowWidth, int windowHeight, const char* pm_windowTitleUtf8 )
+	bool Graphics::create( int windowWidth, int windowHeight, const char* pWindowTitleUtf8 )
 	{
-		MultiByteToWideChar( CP_UTF8, 0, pm_windowTitleUtf8, -1, m_windowTitle, 256 );
+		MultiByteToWideChar( CP_UTF8, 0, pWindowTitleUtf8, -1, m_windowTitle, 256 );
 
 		if( !createWindow( windowWidth, windowHeight ) )
 		{
@@ -47,6 +47,12 @@ namespace GamesAcademy
 		destroyResources();
 		destroyDevice();
 		destroyWindow();
+	}
+
+	void Graphics::setWindowTitle( const char* pWindowTitleUtf8 )
+	{
+		MultiByteToWideChar( CP_UTF8, 0, pWindowTitleUtf8, -1, m_windowTitle, 256 );
+		SetWindowTextW( m_windowHandle, m_windowTitle );
 	}
 
 	void Graphics::beginFrame()

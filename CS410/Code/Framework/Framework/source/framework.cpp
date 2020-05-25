@@ -63,6 +63,11 @@ bool GA_CDECL ga_graphics_is_window_open( ga_graphics_t* graphics )
 	return getGraphicsClass( graphics )->isWindowOpen();
 }
 
+void GA_CDECL ga_graphics_set_window_title( ga_graphics_t* graphics, const char* pWindowTitleUtf8 )
+{
+	getGraphicsClass( graphics )->setWindowTitle( pWindowTitleUtf8 );
+}
+
 float GA_CDECL ga_graphics_get_back_buffer_width( ga_graphics_t* graphics )
 {
 	return getGraphicsClass( graphics )->getBackBufferWidth();

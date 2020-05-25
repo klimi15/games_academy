@@ -3,3 +3,5 @@ bin/
 build/
 lib/
 *.user
+~*
+/CS410/Code/Framework/Framework.zip

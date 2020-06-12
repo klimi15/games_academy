@@ -6,7 +6,7 @@ namespace GamesAcademy
 		struct VertexInput
 		{
 			float3		position	: POSITION0;
-			float2		uv		: TEXCOORD0;
+			float2		uv			: TEXCOORD0;
 		};
 
 		struct VertexToPixel

@@ -42,6 +42,7 @@ namespace GamesAcademy
 
 		{
 			D3D11_DEPTH_STENCIL_DESC depthDesc = {};
+			depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 
 			for( size_t i = 0u; i < ARRAY_COUNT( m_depthStates ); ++i )
 			{

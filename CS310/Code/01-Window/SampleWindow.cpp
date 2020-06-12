@@ -64,11 +64,6 @@ namespace GamesAcademy
 
 		SetWindowLongPtr( m_windowHandle, GWLP_USERDATA, (LONG_PTR)this );
 
-		STARTUPINFO startupInfo = {};
-		startupInfo.cb			= sizeof( startupInfo );
-		startupInfo.dwFlags		= STARTF_USESHOWWINDOW;
-		startupInfo.wShowWindow	= SW_SHOWMINNOACTIVE;
-
 		ShowWindow( m_windowHandle, SW_SHOWNORMAL );
 		UpdateWindow( m_windowHandle );
 
@@ -100,7 +95,7 @@ namespace GamesAcademy
 	void SampleWindow::update()
 	{
 		MSG msg;
-		if( PeekMessage( &msg, nullptr, 0U, 0U, PM_REMOVE ) )
+		while( PeekMessage( &msg, nullptr, 0U, 0U, PM_REMOVE ) )
 		{
 			TranslateMessage( &msg );
 			DispatchMessage( &msg );

@@ -88,7 +88,7 @@ namespace GamesAcademy
 
 		{
 			const MemoryBlock pixelShader = Sample02Shader::getPixelShader();
-			if( !m_pixelShader.createPixelShaderFromMemory(m_device, pixelShader ) )
+			if( !m_pixelShader.createPixelShaderFromMemory( m_device, pixelShader ) )
 			{
 				return false;
 			}
@@ -110,7 +110,7 @@ namespace GamesAcademy
 			D3D11_SUBRESOURCE_DATA bufferData = {};
 			bufferData.pSysMem = vertices;
 
-			HRESULT result = m_device.getDevice()->CreateBuffer( &bufferDesc, &bufferData, &m_pVertexBuffer );
+			const HRESULT result = m_device.getDevice()->CreateBuffer( &bufferDesc, &bufferData, &m_pVertexBuffer );
 			if( FAILED( result ) )
 			{
 				m_window.showMessageBox( L"Failed to create Vertex Buffer." );

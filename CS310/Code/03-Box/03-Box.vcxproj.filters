@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Sample03Box.cpp" />
+    <ClCompile Include="Sample03Shader.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Sample03Box.hpp" />
+    <ClInclude Include="Sample03Types.hpp" />
+    <ClInclude Include="Sample03Shader.hpp" />
+  </ItemGroup>
+</Project>

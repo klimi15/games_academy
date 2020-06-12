@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="Sample02Types.hpp" />
+    <ClInclude Include="SampleShader.hpp" />
+    <ClInclude Include="SampleGraphicsStates.hpp" />
+    <ClInclude Include="SampleTimer.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="SampleShader.cpp" />
+    <ClCompile Include="SampleGraphicsStates.cpp" />
+    <ClCompile Include="SampleTimer.cpp" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="DDSTextureLoader">
+      <UniqueIdentifier>{36fc522e-1c73-4fb2-917b-3d1c7b9a4c21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MikkTSpace">
+      <UniqueIdentifier>{5bf96026-9513-4f73-9354-0ecba3ad9e80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="miniz">
+      <UniqueIdentifier>{7259dab8-6225-4744-8227-1bb5cf6e89c5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="DDSTextureLoader\DDSTextureLoader.cpp">
+      <Filter>DDSTextureLoader</Filter>
+    </ClCompile>
+    <ClCompile Include="MikkTSpace\mikktspace.c">
+      <Filter>MikkTSpace</Filter>
+    </ClCompile>
+    <ClCompile Include="miniz\miniz.c">
+      <Filter>miniz</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DDSTextureLoader\DDSTextureLoader.h">
+      <Filter>DDSTextureLoader</Filter>
+    </ClInclude>
+    <ClInclude Include="MikkTSpace\mikktspace.h">
+      <Filter>MikkTSpace</Filter>
+    </ClInclude>
+    <ClInclude Include="miniz\miniz.h">
+      <Filter>miniz</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

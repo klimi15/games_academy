@@ -21,16 +21,12 @@
   <ItemGroup>
     <ClCompile Include="font.cpp" />
     <ClCompile Include="framework\graphics.cpp" />
-    <ClCompile Include="framework\input.cpp" />
-    <ClCompile Include="framework\sound.cpp" />
     <ClCompile Include="framework\timer.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="font.h" />
     <ClInclude Include="framework\graphics.hpp" />
-    <ClInclude Include="framework\input.hpp" />
-    <ClInclude Include="framework\sound.hpp" />
     <ClInclude Include="framework\timer.hpp" />
     <ClInclude Include="third_party\stb_truetype.h" />
   </ItemGroup>

@@ -9,12 +9,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="framework\input.cpp">
-      <Filter>framework</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\sound.cpp">
-      <Filter>framework</Filter>
-    </ClCompile>
     <ClCompile Include="framework\timer.cpp">
       <Filter>framework</Filter>
     </ClCompile>
@@ -26,12 +20,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework\graphics.hpp">
-      <Filter>framework</Filter>
-    </ClInclude>
-    <ClInclude Include="framework\input.hpp">
-      <Filter>framework</Filter>
-    </ClInclude>
-    <ClInclude Include="framework\sound.hpp">
       <Filter>framework</Filter>
     </ClInclude>
     <ClInclude Include="framework\timer.hpp">

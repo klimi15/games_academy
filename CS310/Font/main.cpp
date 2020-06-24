@@ -1,0 +1,32 @@
+#include "framework/graphics.hpp"
+
+#include <windows.h>
+
+namespace GamesAcademy
+{
+	int		run();
+}
+
+int __stdcall WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nShowCmd )
+{
+	return GamesAcademy::run();
+}
+
+int GamesAcademy::run()
+{
+	Graphics graphics;
+	if( !graphics.create( 1280u, 720u, "Font" ) )
+	{
+		return 1;
+	}
+
+	while( graphics.isWindowOpen() )
+	{
+		graphics.beginFrame();
+		graphics.clear( 0x556699ffu );
+		graphics.endFrame();
+	}
+
+	graphics.destroy();
+	return 0;
+}

@@ -327,7 +327,7 @@ namespace GamesAcademy
 						m_pixelMaterialConstants.unmap( pContext );
 					}
 
-					modelMatrix = XMMatrixTranslation( float( x * -1.5f ), 0.75f, float( z * -1.5f ) );
+					modelMatrix = XMMatrixScaling( 0.5f, 0.5f, 0.5f ) * XMMatrixTranslation( float( x * -1.5f ), 0.75f, float( z * -1.5f ) );
 					renderModel( pContext, m_sphereModel, modelMatrix );
 				}
 			}

@@ -3,6 +3,7 @@
 #include "font.h"
 
 #include <windows.h>
+#include <crtdbg.h>
 
 namespace GamesAcademy
 {
@@ -35,6 +36,9 @@ int GamesAcademy::run()
 		graphics.endFrame();
 	}
 
+	font.destroy();
 	graphics.destroy();
+
+	_CrtDumpMemoryLeaks();
 	return 0;
 }

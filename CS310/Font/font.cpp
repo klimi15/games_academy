@@ -45,13 +45,14 @@ namespace GamesAcademy
 		stbtt_fontinfo fontInfo;
 		stbtt_InitFont( &fontInfo, (const uchar*)pData, 0 );
 
+		const float scale = stbtt_ScaleForPixelHeight( &fontInfo, (float)sizePerChar );
+
 		CharInfo chars[ 127 - 32 ];
 		for( int c = 32; c < 127; c++ )
 		{
 			CharInfo& charInfo = chars[ c - 32u ];
 			charInfo.c = (char)c;
 
-			const float scale = stbtt_ScaleForPixelHeight( &fontInfo, (float)sizePerChar );
 			charInfo.pCharData = stbtt_GetGlyphSDF( &fontInfo, scale, c, 5, 180, 36.0f, &charInfo.width, &charInfo.height, &charInfo.originX, &charInfo.originY );
 		}
 
@@ -116,4 +117,8 @@ namespace GamesAcademy
 		}
 	}
 
+	void Font::draw( Graphics& graphics, float x, float y, float fontSize, const char* pText )
+	{
+
+	}
 }

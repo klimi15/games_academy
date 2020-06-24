@@ -28,6 +28,9 @@ namespace GamesAcademy
 		void						drawRect( float x, float y, float width, float height, uint32_t color );
 		void						drawTriangle( float x1, float y1, float x2, float y2, float x3, float y3, uint32_t color );
 
+		ID3D11Device*				getDevice() { return m_pDevice; }
+		ID3D11DeviceContext*		getDeviceContext() { return m_pContext; }
+
 	private:
 
 		WCHAR						m_windowTitle[ 256u ]	= L"";

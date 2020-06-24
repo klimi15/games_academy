@@ -1,5 +1,7 @@
 #include "framework/graphics.hpp"
 
+#include "font.h"
+
 #include <windows.h>
 
 namespace GamesAcademy
@@ -16,6 +18,12 @@ int GamesAcademy::run()
 {
 	Graphics graphics;
 	if( !graphics.create( 1280u, 720u, "Font" ) )
+	{
+		return 1;
+	}
+
+	Font font;
+	if( !font.create( graphics, "C:\\Windows\\Fonts\\arial.ttf", 24 ) )
 	{
 		return 1;
 	}

@@ -4,6 +4,9 @@
     <Filter Include="framework">
       <UniqueIdentifier>{7fb8f99f-9beb-4973-9dbe-aee2f1b5077a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="third_party">
+      <UniqueIdentifier>{44d1cda0-edb7-49bf-b4f5-62101358f13f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="framework\input.cpp">
@@ -19,6 +22,7 @@
       <Filter>framework</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="font.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework\graphics.hpp">
@@ -32,6 +36,10 @@
     </ClInclude>
     <ClInclude Include="framework\timer.hpp">
       <Filter>framework</Filter>
+    </ClInclude>
+    <ClInclude Include="font.h" />
+    <ClInclude Include="third_party\stb_truetype.h">
+      <Filter>third_party</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

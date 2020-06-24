@@ -1,9 +1,11 @@
 #include "framework/graphics.hpp"
+#include "framework/timer.hpp"
 
 #include "font.h"
 
 #include <windows.h>
 #include <crtdbg.h>
+#include <math.h>
 
 namespace GamesAcademy
 {
@@ -24,15 +26,22 @@ int GamesAcademy::run()
 	}
 
 	Font font;
-	if( !font.create( graphics, "C:\\Windows\\Fonts\\arial.ttf", 24 ) )
+	if( !font.create( graphics, "C:\\Windows\\Fonts\\arial.ttf", 64 ) )
 	{
 		return 1;
 	}
+
+	Timer timer;
+	timer.create();
 
 	while( graphics.isWindowOpen() )
 	{
 		graphics.beginFrame();
 		graphics.clear( 0x556699ffu );
+
+		const float size = float( fabs( sin( timer.get() ) ) * 32.0f ) + 16.0f;
+		graphics.drawText( 0.0f, 0.0f, size, font, "Hello World!", 0u );
+
 		graphics.endFrame();
 	}
 

@@ -6,6 +6,8 @@
 
 namespace GamesAcademy
 {
+	class Font;
+
 	class Graphics
 	{
 	public:
@@ -27,9 +29,12 @@ namespace GamesAcademy
 		void						clear( uint32_t color );
 		void						drawRect( float x, float y, float width, float height, uint32_t color );
 		void						drawTriangle( float x1, float y1, float x2, float y2, float x3, float y3, uint32_t color );
+		void						drawText( float x, float y, float fontSize, const Font& font, const char* pText, uint32_t color );
 
 		ID3D11Device*				getDevice() { return m_pDevice; }
 		ID3D11DeviceContext*		getDeviceContext() { return m_pContext; }
+
+		ID3D10Blob*					compileShader( const void* pCode, size_t codeSize, const char* pTarget );
 
 	private:
 
@@ -51,6 +56,11 @@ namespace GamesAcademy
 		ID3D11Buffer*				m_pVertexBuffer			= nullptr;
 		ID3D11Buffer*				m_pConstantBuffer		= nullptr;
 
+		ID3D11VertexShader*			m_pFontVertexShader		= nullptr;
+		ID3D11PixelShader*			m_pFontPixelShader		= nullptr;
+		ID3D11InputLayout*			m_pFontInputLayout		= nullptr;
+		ID3D11SamplerState*			m_pFontSampler			= nullptr;
+
 		bool						createWindow( int windowWidth, int windowHeight );
 		void						destroyWindow();
 		bool						handleWindowMessage( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam );
@@ -60,11 +70,10 @@ namespace GamesAcademy
 		bool						createDevice();
 
 		bool						createResources();
+		bool						createSolidShader();
+		bool						createFontShader();
 		void						destroyResources();
 
-		ID3D10Blob*					compileShader( const void* pCode, size_t codeSize, const char* pTarget );
-
-		void						update();
 		void						updateWindow();
 		void						updateDevice();
 		void						updateResources();

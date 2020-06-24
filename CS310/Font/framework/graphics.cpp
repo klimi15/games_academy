@@ -1,5 +1,7 @@
 #include "graphics.hpp"
 
+#include "../font.h"
+
 #include <d3dcompiler.h>
 
 #define ARRAY_COUNT( var ) (sizeof((var))/sizeof(*(var)))
@@ -9,6 +11,7 @@ namespace GamesAcademy
 	struct GraphicsVertex
 	{
 		float		position[ 2u ];
+		float		uv[ 2u ];
 		uint32_t	color;
 	};
 
@@ -71,12 +74,7 @@ namespace GamesAcademy
 
 		m_pContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 
-		m_pContext->IASetInputLayout( m_pInputLayout );
-
 		m_pContext->VSSetConstantBuffers( 0u, 1u, &m_pConstantBuffer );
-		m_pContext->VSSetShader( m_pVertexShader, nullptr, 0u );
-
-		m_pContext->PSSetShader( m_pPixelShader, nullptr, 0u );
 	}
 
 	void Graphics::endFrame()
@@ -99,6 +97,10 @@ namespace GamesAcademy
 
 	void Graphics::drawRect( float x, float y, float width, float height, uint32_t color )
 	{
+		m_pContext->IASetInputLayout( m_pInputLayout );
+		m_pContext->VSSetShader( m_pVertexShader, nullptr, 0u );
+		m_pContext->PSSetShader( m_pPixelShader, nullptr, 0u );
+
 		{
 			D3D11_MAPPED_SUBRESOURCE mapData;
 			m_pContext->Map( m_pVertexBuffer, 0u, D3D11_MAP_WRITE_DISCARD, 0u, &mapData );
@@ -140,6 +142,10 @@ namespace GamesAcademy
 
 	void Graphics::drawTriangle( float x1, float y1, float x2, float y2, float x3, float y3, uint32_t color )
 	{
+		m_pContext->IASetInputLayout( m_pInputLayout );
+		m_pContext->VSSetShader( m_pVertexShader, nullptr, 0u );
+		m_pContext->PSSetShader( m_pPixelShader, nullptr, 0u );
+
 		{
 			D3D11_MAPPED_SUBRESOURCE mapData;
 			m_pContext->Map( m_pVertexBuffer, 0u, D3D11_MAP_WRITE_DISCARD, 0u, &mapData );
@@ -165,6 +171,90 @@ namespace GamesAcademy
 		m_pContext->IASetVertexBuffers( 0u, 1u, &m_pVertexBuffer, &stride, &offset );
 
 		m_pContext->Draw( 3u, 0u );
+	}
+
+	void Graphics::drawText( float x, float y, float fontSize, const Font& font, const char* pText, uint32_t color )
+	{
+		m_pContext->IASetInputLayout( m_pFontInputLayout );
+		m_pContext->VSSetShader( m_pFontVertexShader, nullptr, 0u );
+		m_pContext->PSSetShader( m_pFontPixelShader, nullptr, 0u );
+
+		D3D11_MAPPED_SUBRESOURCE mapData;
+		m_pContext->Map( m_pVertexBuffer, 0u, D3D11_MAP_WRITE_DISCARD, 0u, &mapData );
+		GraphicsVertex* pVertices = (GraphicsVertex*)mapData.pData;
+
+		const float sizeFactor = fontSize / font.getSize();
+
+		UINT vertexCount = 0u;
+		while( *pText )
+		{
+			if( *pText == ' ' )
+			{
+				pText++;
+				x += fontSize / 2.0f;
+				continue;
+			}
+
+			const FontCharInfo& charInfo = font.getCharInfo( *pText );
+
+			const float width = charInfo.width * sizeFactor;
+			const float height = charInfo.height * sizeFactor;
+			const float offsetY = charInfo.offsetY * sizeFactor;
+
+			pVertices[ 0u ].position[ 0u ]	= x;
+			pVertices[ 0u ].position[ 1u ]	= y + offsetY;
+			pVertices[ 0u ].uv[ 0u ]		= charInfo.u0;
+			pVertices[ 0u ].uv[ 1u ]		= charInfo.v0;
+			pVertices[ 0u ].color			= color;
+
+			pVertices[ 1u ].position[ 0u ]	= x + width;
+			pVertices[ 1u ].position[ 1u ]	= y + offsetY;
+			pVertices[ 1u ].uv[ 0u ]		= charInfo.u1;
+			pVertices[ 1u ].uv[ 1u ]		= charInfo.v0;
+			pVertices[ 1u ].color			= color;
+
+			pVertices[ 2u ].position[ 0u ]	= x + width;
+			pVertices[ 2u ].position[ 1u ]	= y + height + offsetY;
+			pVertices[ 2u ].uv[ 0u ]		= charInfo.u1;
+			pVertices[ 2u ].uv[ 1u ]		= charInfo.v1;
+			pVertices[ 2u ].color			= color;
+
+			pVertices[ 3u ].position[ 0u ]	= x + width;
+			pVertices[ 3u ].position[ 1u ]	= y + height + offsetY;
+			pVertices[ 3u ].uv[ 0u ]		= charInfo.u1;
+			pVertices[ 3u ].uv[ 1u ]		= charInfo.v1;
+			pVertices[ 3u ].color			= color;
+
+			pVertices[ 4u ].position[ 0u ]	= x;
+			pVertices[ 4u ].position[ 1u ]	= y + height + offsetY;
+			pVertices[ 4u ].uv[ 0u ]		= charInfo.u0;
+			pVertices[ 4u ].uv[ 1u ]		= charInfo.v1;
+			pVertices[ 4u ].color			= color;
+
+			pVertices[ 5u ].position[ 0u ]	= x;
+			pVertices[ 5u ].position[ 1u ]	= y + offsetY;
+			pVertices[ 5u ].uv[ 0u ]		= charInfo.u0;
+			pVertices[ 5u ].uv[ 1u ]		= charInfo.v0;
+			pVertices[ 5u ].color			= color;
+
+			pText++;
+			pVertices += 6u;
+			vertexCount += 6u;
+
+			x += width;
+		}
+
+		m_pContext->Unmap( m_pVertexBuffer, 0u );
+
+		UINT stride = sizeof( GraphicsVertex );
+		UINT offset = 0u;
+		m_pContext->IASetVertexBuffers( 0u, 1u, &m_pVertexBuffer, &stride, &offset );
+
+		ID3D11ShaderResourceView* pView = font.getTextureView();
+		m_pContext->PSSetShaderResources( 0u, 1u, &pView );
+		m_pContext->PSSetSamplers( 0u, 1u, &m_pFontSampler );
+
+		m_pContext->Draw( vertexCount, 0u );
 	}
 
 	bool Graphics::createWindow( int windowWidth, int windowHeight )
@@ -342,6 +432,51 @@ namespace GamesAcademy
 
 	bool Graphics::createResources()
 	{
+		if( !createSolidShader() )
+		{
+			return false;
+		}
+
+		if( !createFontShader() )
+		{
+			return false;
+		}
+
+		{
+			D3D11_BUFFER_DESC bufferDesc = {};
+			bufferDesc.ByteWidth		= sizeof( GraphicsVertex ) * 6u * 256u;
+			bufferDesc.Usage			= D3D11_USAGE_DYNAMIC;
+			bufferDesc.BindFlags		= D3D11_BIND_VERTEX_BUFFER;
+			bufferDesc.CPUAccessFlags	= D3D11_CPU_ACCESS_WRITE;
+
+			HRESULT result = m_pDevice->CreateBuffer( &bufferDesc, nullptr, &m_pVertexBuffer );
+			if( FAILED( result ) )
+			{
+				MessageBoxW( m_windowHandle, L"Failed to create Vertex Buffer.", m_windowTitle, MB_ICONSTOP );
+				return false;
+			}
+		}
+
+		{
+			D3D11_BUFFER_DESC bufferDesc = {};
+			bufferDesc.ByteWidth		= sizeof( float ) * 4 * 4;
+			bufferDesc.Usage			= D3D11_USAGE_DYNAMIC;
+			bufferDesc.BindFlags		= D3D11_BIND_CONSTANT_BUFFER;
+			bufferDesc.CPUAccessFlags	= D3D11_CPU_ACCESS_WRITE;
+
+			HRESULT result = m_pDevice->CreateBuffer( &bufferDesc, nullptr, &m_pConstantBuffer );
+			if( FAILED( result ) )
+			{
+				MessageBoxW( m_windowHandle, L"Failed to create Constant Buffer.", m_windowTitle, MB_ICONSTOP );
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	bool Graphics::createSolidShader()
+	{
 		{
 			static const char VertexShader[] = R"V0G0N(
 				struct VertexInput
@@ -389,8 +524,9 @@ namespace GamesAcademy
 
 			const D3D11_INPUT_ELEMENT_DESC inputElements[] =
 			{
-				{ "POSITION",	0u, DXGI_FORMAT_R32G32_FLOAT,	0u, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0u },
-				{ "COLOR",		0u, DXGI_FORMAT_R8G8B8A8_UNORM,	0u, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0u }
+				{"POSITION", 0u, DXGI_FORMAT_R32G32_FLOAT, 0u, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0u},
+				{"TEXCOORD", 0u, DXGI_FORMAT_R32G32_FLOAT, 0u, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0u},
+				{"COLOR", 0u, DXGI_FORMAT_R8G8B8A8_UNORM, 0u, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0u}
 			};
 
 			result = m_pDevice->CreateInputLayout( inputElements, ARRAY_COUNT( inputElements ), pVertexShaderBlob->GetBufferPointer(), pVertexShaderBlob->GetBufferSize(), &m_pInputLayout );
@@ -443,32 +579,131 @@ namespace GamesAcademy
 			pPixelShaderBlob->Release();
 		}
 
-		{
-			D3D11_BUFFER_DESC bufferDesc = {};
-			bufferDesc.ByteWidth		= sizeof( GraphicsVertex ) * 6u;
-			bufferDesc.Usage			= D3D11_USAGE_DYNAMIC;
-			bufferDesc.BindFlags		= D3D11_BIND_VERTEX_BUFFER;
-			bufferDesc.CPUAccessFlags	= D3D11_CPU_ACCESS_WRITE;
+		return true;
+	}
 
-			HRESULT result = m_pDevice->CreateBuffer( &bufferDesc, nullptr, &m_pVertexBuffer );
-			if( FAILED( result ) )
+	bool Graphics::createFontShader()
+	{
+		{
+			static const char VertexShader[] = R"V0G0N(
+				struct VertexInput
+				{
+					float2		position	: POSITION0;
+					float2		uv			: TEXCOORD0;
+				};
+
+				struct VertexToPixel
+				{
+					float4		position	: SV_POSITION0;
+					float2		uv			: TEXCOORD0;
+				};
+
+				cbuffer constants : register(b0)
+				{
+					float4x4	proj;
+				};
+
+				VertexToPixel main( VertexInput input )
+				{
+					float4 position = float4( input.position, 0.0f, 1.0 );
+					position = mul( position, proj );
+
+					VertexToPixel output;
+					output.position		= position;
+					output.uv			= input.uv;
+
+					return output;
+				}
+			)V0G0N";
+
+			ID3DBlob* pVertexShaderBlob = compileShader( VertexShader, sizeof( VertexShader ), "vs_5_0" );
+			if( pVertexShaderBlob == nullptr )
 			{
-				MessageBoxW( m_windowHandle, L"Failed to create Vertex Buffer.", m_windowTitle, MB_ICONSTOP );
 				return false;
 			}
+
+			HRESULT result = m_pDevice->CreateVertexShader( pVertexShaderBlob->GetBufferPointer(), pVertexShaderBlob->GetBufferSize(), nullptr, &m_pFontVertexShader );
+			if( FAILED( result ) )
+			{
+				MessageBoxW( m_windowHandle, L"Failed to create Vertex Shader.", m_windowTitle, MB_ICONSTOP );
+				return false;
+			}
+
+			const D3D11_INPUT_ELEMENT_DESC inputElements[] =
+			{
+				{"POSITION", 0u, DXGI_FORMAT_R32G32_FLOAT, 0u, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0u},
+				{"TEXCOORD", 0u, DXGI_FORMAT_R32G32_FLOAT, 0u, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0u},
+				{"COLOR", 0u, DXGI_FORMAT_R8G8B8A8_UNORM, 0u, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0u}
+			};
+
+			result = m_pDevice->CreateInputLayout( inputElements, ARRAY_COUNT( inputElements ), pVertexShaderBlob->GetBufferPointer(), pVertexShaderBlob->GetBufferSize(), &m_pFontInputLayout );
+			if( FAILED( result ) )
+			{
+				pVertexShaderBlob->Release();
+				MessageBoxW( m_windowHandle, L"Failed to create Input Layout.", m_windowTitle, MB_ICONSTOP );
+				return false;
+			}
+
+			pVertexShaderBlob->Release();
 		}
 
 		{
-			D3D11_BUFFER_DESC bufferDesc = {};
-			bufferDesc.ByteWidth		= sizeof( float ) * 4 * 4;
-			bufferDesc.Usage			= D3D11_USAGE_DYNAMIC;
-			bufferDesc.BindFlags		= D3D11_BIND_CONSTANT_BUFFER;
-			bufferDesc.CPUAccessFlags	= D3D11_CPU_ACCESS_WRITE;
+			static const char PixelShader[] = R"V0G0N(
+				struct VertexToPixel
+				{
+					float4		position	: SV_POSITION0;
+					float2		uv			: TEXCOORD0;
+				};
 
-			HRESULT result = m_pDevice->CreateBuffer( &bufferDesc, nullptr, &m_pConstantBuffer );
+				struct PixelOutput
+				{
+					float4		color		: SV_TARGET0;
+				};
+
+				Texture2D t_sdf : register( t0 );
+				SamplerState s_linear : register( s0 );
+
+				PixelOutput main( VertexToPixel input )
+				{
+					float dis = t_sdf.Sample( s_linear, input.uv );
+					float smoothing = 0.1;
+					float value = smoothstep( 0.5 - smoothing, 0.5 + smoothing, dis );
+
+					PixelOutput output;
+					output.color		= float4( value.rrr, 1 ); //  float4( 0, 0.5, 1, 1 );
+
+					return output;
+				}
+			)V0G0N";
+
+			ID3DBlob* pPixelShaderBlob = compileShader( PixelShader, sizeof( PixelShader ), "ps_5_0" );
+			if( pPixelShaderBlob == nullptr )
+			{
+				return false;
+			}
+
+			HRESULT result = m_pDevice->CreatePixelShader( pPixelShaderBlob->GetBufferPointer(), pPixelShaderBlob->GetBufferSize(), nullptr, &m_pFontPixelShader );
 			if( FAILED( result ) )
 			{
-				MessageBoxW( m_windowHandle, L"Failed to create Constant Buffer.", m_windowTitle, MB_ICONSTOP );
+				pPixelShaderBlob->Release();
+				MessageBoxW( m_windowHandle, L"Failed to create Pixel Shader.", m_windowTitle, MB_ICONSTOP );
+				return false;
+			}
+
+			pPixelShaderBlob->Release();
+		}
+
+		{
+			D3D11_SAMPLER_DESC samplerDesc = {};
+			samplerDesc.AddressU		= D3D11_TEXTURE_ADDRESS_CLAMP;
+			samplerDesc.AddressV		= D3D11_TEXTURE_ADDRESS_CLAMP;
+			samplerDesc.AddressW		= D3D11_TEXTURE_ADDRESS_CLAMP;
+			samplerDesc.Filter			= D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
+
+			HRESULT result = m_pDevice->CreateSamplerState( &samplerDesc, &m_pFontSampler );
+			if( FAILED( result ) )
+			{
+				MessageBoxW( m_windowHandle, L"Failed to create Sampler.", m_windowTitle, MB_ICONSTOP );
 				return false;
 			}
 		}

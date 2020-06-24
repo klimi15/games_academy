@@ -17,7 +17,6 @@ namespace GamesAcademy
 
 	struct CharInfo
 	{
-		char	c;
 		int		width;
 		int		height;
 		int		originX;
@@ -25,8 +24,16 @@ namespace GamesAcademy
 		uchar*	pCharData;
 	};
 
+	struct FontVertex
+	{
+		float	position[ 2u ];
+		float	uv[ 2u ];
+	};
+
 	bool Font::create( Graphics& graphics, const char* pTtfFilepath, int sizePerChar )
 	{
+		m_sdfSize = float( sizePerChar );
+
 		void* pData = nullptr;
 		{
 			FILE* pFile = nullptr;
@@ -47,13 +54,11 @@ namespace GamesAcademy
 
 		const float scale = stbtt_ScaleForPixelHeight( &fontInfo, (float)sizePerChar );
 
-		CharInfo chars[ 127 - 32 ];
-		for( int c = 32; c < 127; c++ )
+		CharInfo chars[ CharCount ];
+		for( int c = FirstChar; c < EndChar; c++ )
 		{
-			CharInfo& charInfo = chars[ c - 32u ];
-			charInfo.c = (char)c;
-
-			charInfo.pCharData = stbtt_GetGlyphSDF( &fontInfo, scale, c, 5, 180, 36.0f, &charInfo.width, &charInfo.height, &charInfo.originX, &charInfo.originY );
+			CharInfo& charInfo = chars[ c - FirstChar ];
+			charInfo.pCharData = stbtt_GetCodepointSDF( &fontInfo, scale, c, 5, 180, 36.0f, &charInfo.width, &charInfo.height, &charInfo.originX, &charInfo.originY );
 		}
 
 		int textureWidth = 0;
@@ -66,7 +71,7 @@ namespace GamesAcademy
 
 		int offsetX = 0;
 		uchar* pTextureData = (uchar*)malloc( textureWidth * textureHeight );
-		for( int charIndex = 0; charIndex < ARRAY_COUNT( chars ); ++charIndex )
+		for( int charIndex = 0; charIndex < CharCount; ++charIndex )
 		{
 			const CharInfo& charInfo = chars[ charIndex ];
 
@@ -76,6 +81,15 @@ namespace GamesAcademy
 				const int targetOffset = (y * textureWidth) + offsetX;
 				memcpy( pTextureData + targetOffset, charInfo.pCharData + sourceOffset, charInfo.width );
 			}
+
+			FontCharInfo& shaderInfo = m_chars[ charIndex ];
+			shaderInfo.width	= float( charInfo.width );
+			shaderInfo.height	= float( charInfo.height );
+			shaderInfo.offsetY	= float( charInfo.originY ) + float( textureHeight );
+			shaderInfo.u0		= float( offsetX ) / float( textureWidth );
+			shaderInfo.v0		= 0.0f;
+			shaderInfo.u1		= float( offsetX + charInfo.width ) / float( textureWidth );
+			shaderInfo.v1		= float( charInfo.height ) / float( textureHeight );
 
 			offsetX += charInfo.width;
 
@@ -87,7 +101,7 @@ namespace GamesAcademy
 		D3D11_TEXTURE2D_DESC textureDesc = {};
 		textureDesc.Width				= textureWidth;
 		textureDesc.Height				= textureHeight;
-		textureDesc.Format				= DXGI_FORMAT_R8_SINT;
+		textureDesc.Format				= DXGI_FORMAT_R8_UNORM;
 		textureDesc.MipLevels			= 1u;
 		textureDesc.ArraySize			= 1u;
 		textureDesc.BindFlags			= D3D11_BIND_SHADER_RESOURCE;
@@ -98,27 +112,36 @@ namespace GamesAcademy
 		textureData.pSysMem		= pTextureData;
 		textureData.SysMemPitch	= textureWidth;
 
-		if( graphics.getDevice()->CreateTexture2D( &textureDesc, &textureData, &m_pSdfTexture ) != S_OK )
+		const bool textureResult = graphics.getDevice()->CreateTexture2D( &textureDesc, &textureData, &m_pSdfTexture ) == S_OK;
+		free( pTextureData );
+
+		if( !textureResult )
 		{
-			free( pTextureData );
 			return false;
 		}
 
-		free( pTextureData );
+		const bool viewResult = graphics.getDevice()->CreateShaderResourceView( m_pSdfTexture, nullptr, &m_pSdfView ) == S_OK;
+		if( !viewResult )
+		{
+			destroy();
+			return false;
+		}
+
 		return true;
 	}
 
 	void Font::destroy()
 	{
+		if( m_pSdfView != nullptr )
+		{
+			m_pSdfView->Release();
+			m_pSdfView = nullptr;
+		}
+
 		if( m_pSdfTexture != nullptr )
 		{
 			m_pSdfTexture->Release();
 			m_pSdfTexture = nullptr;
 		}
-	}
-
-	void Font::draw( Graphics& graphics, float x, float y, float fontSize, const char* pText )
-	{
-
 	}
 }

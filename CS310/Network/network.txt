@@ -30,9 +30,18 @@ uint8				playerId;
 uint8				positionX;
 uint8				positionY;
 
+struct ShootState:
+uint8				playerId;
+uint8				startPositionX;
+uint8				startPositionY;
+uint8				endPositionX;
+uint8				endPositionY;
+
 struct GameState:
 PlayerState			players[ 8 ];
 uint8				playerCount;
+ShootState			shoots[ 8 ];
+uint8				shootCount;
 
 enum PlayerActionType:
 0 = Invalid
@@ -46,4 +55,5 @@ enum PlayerActionType:
 8 = ShootDownRight
 
 struct PlayerAction:
-PlayerActionType	action;
+uint8				action;
+

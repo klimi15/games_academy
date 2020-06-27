@@ -15,7 +15,7 @@
 namespace GamesAcademy
 {
 	template<class T>
-	const T& clamp( const T& x, const T& upper, const T& lower )
+	const T& clamp( const T& x, const T& lower, const T& upper )
 	{
 		return std::min( upper, std::max( x, lower ) );
 	}
@@ -24,7 +24,7 @@ namespace GamesAcademy
 	{
 		timespec spec;
 		clock_gettime( CLOCK_REALTIME, &spec );
-		return double( spec.tv_nsec ) / 1.0e6;
+		return double( spec.tv_sec ) + (double( spec.tv_nsec ) / 1000000000.0);
 	}
 
 	bool Server::create()
@@ -95,15 +95,22 @@ namespace GamesAcademy
 
 		for( uint32 clientToRemove : clientsToRemove )
 		{
-			printf( "Client from %08x timed out, so remove!\n", clientToRemove );
-			m_clients.erase( m_clients.find( clientToRemove ) );
+			ClientMap::iterator clientIt = m_clients.find( clientToRemove );
+			printf( "Player %d on Client %08x timed out, so remove!\n", clientIt->second.playerId, clientToRemove );
+			m_clients.erase( clientIt );
 		}
 
 		for( std::vector< ShootState >::iterator it = m_shoots.begin(); it != m_shoots.end(); ++it )
 		{
-			if( serverTime - it->time > 5.0 )
+			if( serverTime - it->time < 5.0 )
 			{
-				it = m_shoots.erase( it );
+				continue;
+			}
+
+			it = m_shoots.erase( it );
+			if( it == m_shoots.end() )
+			{
+				break;
 			}
 		}
 
@@ -201,6 +208,12 @@ namespace GamesAcademy
 		}
 
 		const MessagePlayerAction* pPlayerAction = (const MessagePlayerAction*)pMessage;
+
+		if( client.status != ClientStatus::LoggedIn )
+		{
+			printf( "Client %d is not logged in. Action will be ignored.\n", client.address.sin_addr.s_addr );
+			return;
+		}
 
 		int moveX = 0;
 		int moveY = 0;

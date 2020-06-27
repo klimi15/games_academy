@@ -1,23 +1,49 @@
 Type: Client
-Protocol: UDP
+Protocol: UDP/IPv4
 Port: 1546
 
-Message Type:
+enum Message Type:
 0 = Invalid
 
-Client -> Server
-1 = Login Request
+// Client -> Server
+10 = LoginRequest
+11 = PlayerAction 
 
-Server -> Client
-2 = Login Response
+// Server -> Client
+20 = LoginResponse
+21 = GameState
 
-Generial Header:
-uint16	messageSize;
-uint16	messageType;
+struct GenerialHeader:
+uint16				messageSize;
+uint16				messageType;
 
-Login Request:
-uint16	usenameLength;
-char	username[ usenameLength ];
+struct LoginRequest:
+uint16				usenameLength;
+char				username[ usenameLength ];
 
-Login Response:
-bool	ok;
+struct LoginResponse:
+bool				ok;
+uint8				playerId;
+
+struct PlayerState:
+uint8				playerId;
+uint8				positionX;
+uint8				positionY;
+
+struct GameState:
+PlayerState			players[ 8 ];
+uint8				playerCount;
+
+enum PlayerActionType:
+0 = Invalid
+1 = MoveUp
+2 = MoveDown
+3 = MoveLeft
+4 = MoveRight
+5 = ShootUpLeft
+6 = ShootUpRight
+7 = ShootDownLeft
+8 = ShootDownRight
+
+struct PlayerAction:
+PlayerActionType	action;

@@ -1,0 +1,23 @@
+Type: Client
+Protocol: UDP
+Port: 1546
+
+Message Type:
+0 = Invalid
+
+Client -> Server
+1 = Login Request
+
+Server -> Client
+2 = Login Response
+
+Generial Header:
+uint16	messageSize;
+uint16	messageType;
+
+Login Request:
+uint16	usenameLength;
+char	username[ usenameLength ];
+
+Login Response:
+bool	ok;

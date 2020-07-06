@@ -63,6 +63,7 @@ namespace GamesAcademy
 
 	struct MessageGameState
 	{
+		uint32					round;
 		MessagePlayerState		players[ 8u ];
 		uint8					playerCount;
 		MessageShootState		shoots[ 8u ];
@@ -84,6 +85,7 @@ namespace GamesAcademy
 
 	struct MessagePlayerAction
 	{
+		uint32					round;
 		MessagePlayerActionType	action;
 	};
 }

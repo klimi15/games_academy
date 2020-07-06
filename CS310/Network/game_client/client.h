@@ -47,6 +47,7 @@ namespace GamesAcademy
 
 		void		update();
 		void		render();
+		void		renderShoot( const MessageShootState& shoot );
 
 		float		getCellPosition( uint8 pos ) const;
 	};

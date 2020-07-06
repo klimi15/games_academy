@@ -21,6 +21,7 @@ namespace GamesAcademy
 		// Client -> Server
 		LoginRequest	= 10,
 		PlayerAction	= 11,
+		Ping			= 12,
 
 		// Server -> Client
 		LoginResponse	= 20,

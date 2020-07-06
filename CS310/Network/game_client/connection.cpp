@@ -48,7 +48,7 @@ namespace GamesAcademy
 		}
 	}
 
-	void Connection::update()
+	void Connection::update( double gameTime )
 	{
 		char buffer[ 2048 ];
 		sockaddr_in address;
@@ -88,6 +88,13 @@ namespace GamesAcademy
 				break;
 			}
 		}
+
+		if( m_state == ConnectionState::Playing &&
+			gameTime - m_lastPingTime > 5.0 )
+		{
+			sendMessage( MessageType::Ping, nullptr, 0u );
+			m_lastPingTime = gameTime;
+		}
 	}
 
 	void Connection::login( const char* pUsername )
@@ -103,6 +110,7 @@ namespace GamesAcademy
 	void Connection::action( MessagePlayerActionType action )
 	{
 		MessagePlayerAction playerAction;
+		playerAction.round	= m_gameState.round;
 		playerAction.action = action;
 
 		sendMessage( MessageType::PlayerAction, &playerAction, sizeof( playerAction ) );

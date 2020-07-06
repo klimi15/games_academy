@@ -70,7 +70,7 @@ namespace GamesAcademy
 	void Client::update()
 	{
 		m_input.update();
-		m_connection.update();
+		m_connection.update( m_timer.get() );
 
 		if( m_connection.getState() != ConnectionState::Playing )
 		{

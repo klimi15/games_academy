@@ -22,7 +22,7 @@ namespace GamesAcademy
 		bool					create();
 		void					destroy();
 
-		void					update();
+		void					update( double gameTime );
 
 		ConnectionState			getState() const { return m_state; }
 		uint8					getPlayerId() const { return m_playerId; }
@@ -37,6 +37,7 @@ namespace GamesAcademy
 		sockaddr_in				m_serverAddress;
 
 		ConnectionState			m_state				= ConnectionState::Invalid;
+		double					m_lastPingTime		= 0.0;
 		uint8					m_playerId			= 0xffu;
 		MessageGameState		m_gameState;
 

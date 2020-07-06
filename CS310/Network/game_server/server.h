@@ -29,27 +29,31 @@ namespace GamesAcademy
 
 		struct ClientState
 		{
-			sockaddr_in		address;
-			ClientStatus	status				= ClientStatus::Invalid;
-			double			lastMesssageTime	= 0.0;
-			std::string		username;
+			sockaddr_in			address;
+			ClientStatus		status				= ClientStatus::Invalid;
+			double				lastMesssageTime	= 0.0;
+			std::string			username;
 
-			uint8			playerId			= 0xffu;
-			uint8			positionX			= 0u;
-			uint8			positionY			= 0u;
+			uint8				playerId			= 0xffu;
+			uint8				positionX			= 0u;
+			uint8				positionY			= 0u;
 
-			uint16			kills				= 0u;
+			uint32				round				= 0xffffffffu;
+			MessagePlayerAction	action;
+			ClientState*		pKiller				= nullptr;
+
+			uint16				kills				= 0u;
 		};
 
 		struct ShootState
 		{
-			double			time				= 0.0;
+			uint32				round				= 0;
 
-			uint8			playerId			= 0xffu;
-			uint8			startPositionX		= 0u;
-			uint8			startPositionY		= 0u;
-			uint8			endPositionX		= 0u;
-			uint8			endPositionY		= 0u;
+			uint8				playerId			= 0xffu;
+			uint8				startPositionX		= 0u;
+			uint8				startPositionY		= 0u;
+			uint8				endPositionX		= 0u;
+			uint8				endPositionY		= 0u;
 		};
 
 		using ClientMap = std::map< uint32, ClientState >;
@@ -60,6 +64,7 @@ namespace GamesAcademy
 		ClientMap	m_clients;
 		uint8		m_nextPlayerId	= 0u;
 		ShootArray	m_shoots;
+		uint32		m_round			= 0u;
 
 		void		receiveMessages( double serverTime );
 		void		handleLoginRequestMessage( ClientState& client, const void* pMessage, uint16 messageSize );
@@ -68,6 +73,7 @@ namespace GamesAcademy
 		void		sendGameState();
 		void		sendMessage( const ClientState& client, MessageType type, const void* pData, uint16 dataSize );
 
+		void		executePlayerAction( ClientState& client );
 		void		killPlayer( ClientState& target, ClientState* pKiller );
 	};
 }

@@ -21,6 +21,7 @@ namespace GamesAcademy
 		// Client -> Server
 		LoginRequest	= 10,
 		PlayerAction	= 11,
+		Ping			= 12,
 
 		// Server -> Client
 		LoginResponse	= 20,
@@ -63,6 +64,7 @@ namespace GamesAcademy
 
 	struct MessageGameState
 	{
+		uint32						round;
 		MessagePlayerState			players[ 8u ];
 		uint8						playerCount;
 		MessageShootState			shoots[ 8u ];
@@ -84,6 +86,7 @@ namespace GamesAcademy
 
 	struct MessagePlayerAction
 	{
+		uint32						round;
 		MessagePlayerActionType		action;
 	};
 }

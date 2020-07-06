@@ -38,6 +38,7 @@ uint8				endPositionX;
 uint8				endPositionY;
 
 struct GameState:
+uint32				round;
 PlayerState			players[ 8 ];
 uint8				playerCount;
 ShootState			shoots[ 8 ];
@@ -55,5 +56,6 @@ enum PlayerActionType:
 8 = ShootDownRight
 
 struct PlayerAction:
+uint32				round;
 uint8				action;
 

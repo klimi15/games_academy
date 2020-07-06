@@ -84,12 +84,40 @@ namespace GamesAcademy
 
 		receiveMessages( serverTime );
 
+		bool allClientDone = !m_clients.empty();
 		std::vector< uint32 > clientsToRemove;
 		for( const std::pair< uint32, ClientState >& kvp : m_clients )
 		{
 			if( serverTime - kvp.second.lastMesssageTime > 15.0 )
 			{
 				clientsToRemove.push_back( kvp.first );
+			}
+
+			allClientDone &= kvp.second.round == 0xffffffffu;
+		}
+
+		if( allClientDone )
+		{
+			printf( "Round %d done.\n", m_round );
+
+			m_round++;
+
+			for( ClientMap::iterator it = m_clients.begin(); it != m_clients.end(); ++it )
+			{
+				executePlayerAction( it->second );
+
+				it->second.round = m_round;
+			}
+
+			for( ClientMap::iterator it = m_clients.begin(); it != m_clients.end(); ++it )
+			{
+				if( it->second.pKiller == nullptr )
+				{
+					continue;
+				}
+
+				killPlayer( it->second, it->second.pKiller );
+				it->second.pKiller = nullptr;
 			}
 		}
 
@@ -102,7 +130,7 @@ namespace GamesAcademy
 
 		for( std::vector< ShootState >::iterator it = m_shoots.begin(); it != m_shoots.end(); ++it )
 		{
-			if( serverTime - it->time < 5.0 )
+			if( m_round - it->round < 5u )
 			{
 				continue;
 			}
@@ -159,6 +187,10 @@ namespace GamesAcademy
 
 			case MessageType::PlayerAction:
 				handlePlayerActionMessage( client, pMessageData, pHeader->messageSize, serverTime );
+				break;
+
+			case MessageType::Ping:
+				break;
 
 			default:
 				printf( "Received packet from %08x with invalid messageType: %d\n", clientAddress.sin_addr.s_addr, (int)pHeader->messageType );
@@ -215,104 +247,21 @@ namespace GamesAcademy
 			return;
 		}
 
-		int moveX = 0;
-		int moveY = 0;
-		int shootX = 0;
-		int shootY = 0;
-		switch( pPlayerAction->action )
+		if( pPlayerAction->round != client.round )
 		{
-		case MessagePlayerActionType::MoveUp:
-			moveY = -1;
-			break;
-
-		case MessagePlayerActionType::MoveDown:
-			moveY = 1;
-			break;
-
-		case MessagePlayerActionType::MoveLeft:
-			moveX = -1;
-			break;
-
-		case MessagePlayerActionType::MoveRight:
-			moveX = 1;
-			break;
-
-		case MessagePlayerActionType::ShootUpLeft:
-			shootX = -1;
-			shootY = -1;
-			break;
-
-		case MessagePlayerActionType::ShootUpRight:
-			shootX = 1;
-			shootY = -1;
-			break;
-
-		case MessagePlayerActionType::ShootDownLeft:
-			shootX = -1;
-			shootY = 1;
-			break;
-
-		case MessagePlayerActionType::ShootDownRight:
-			shootX = 1;
-			shootY = 1;
-			break;
-
-		default:
-			printf( "Invalid Player action: %d\n", (int)pPlayerAction->action );
-			break;
+			printf( "Received player action for wrong round(%d != %d).\n", client.address.sin_addr.s_addr, pPlayerAction->round, client.round );
+			return;
 		}
 
-		if( moveX != 0 || moveY != 0 )
-		{
-			const uint8 oldPositionX = client.positionX;
-			const uint8 oldPositionY = client.positionY;
-			client.positionX = clamp( client.positionX + moveX, 0, 16 );
-			client.positionY = clamp( client.positionY + moveY, 0, 16 );
-
-			printf( "Move Player %d from (%d, %d) to (%d, %d)\n", client.playerId, oldPositionX, oldPositionY, client.positionX, client.positionY );
-		}
-		else if( shootX != 0 || shootY != 0 )
-		{
-			ShootState shoot;
-			shoot.time				= serverTime;
-			shoot.playerId			= client.playerId;
-			shoot.startPositionX	= client.positionX;
-			shoot.startPositionY	= client.positionY;
-
-			int positionX = shoot.startPositionX;
-			int positionY = shoot.startPositionY;
-			while( positionX >= 0 && positionX < 16 &&
-				positionY >= 0 && positionY < 16 )
-			{
-				for( std::map< uint32, ClientState >::iterator it = m_clients.begin(); it != m_clients.end(); ++it )
-				{
-					ClientState& target = it->second;
-					if( target.playerId == client.playerId ||
-						target.positionX != positionX ||
-						target.positionY != positionY )
-					{
-						continue;
-					}
-
-					killPlayer( target, &client );
-				}
-
-				positionX += shootX;
-				positionY += shootY;
-			}
-
-			shoot.endPositionX	= positionX;
-			shoot.endPositionY	= positionY;
-
-			m_shoots.push_back( shoot );
-
-			printf( "Player %d shoot from (%d, %d) to (%d, %d)\n", client.playerId, shoot.startPositionX, shoot.startPositionY, shoot.endPositionX, shoot.endPositionY );
-		}
+		client.action = *pPlayerAction;
+		client.round = 0xffffffffu;
 	}
 
 	void Server::sendGameState()
 	{
 		MessageGameState gameState;
+		gameState.round = m_round;
+
 		uint8 i = 0u;
 		for( const std::pair< uint32, ClientState >& kvp : m_clients )
 		{
@@ -373,6 +322,103 @@ namespace GamesAcademy
 		if( sendResult < 0 )
 		{
 			printf( "Failed to send packet to %08x(result: %d)\n", client.address.sin_addr.s_addr, sendResult );
+		}
+	}
+
+	void Server::executePlayerAction( ClientState& client )
+	{
+		int moveX = 0;
+		int moveY = 0;
+		int shootX = 0;
+		int shootY = 0;
+		switch( client.action.action )
+		{
+		case MessagePlayerActionType::MoveUp:
+			moveY = -1;
+			break;
+
+		case MessagePlayerActionType::MoveDown:
+			moveY = 1;
+			break;
+
+		case MessagePlayerActionType::MoveLeft:
+			moveX = -1;
+			break;
+
+		case MessagePlayerActionType::MoveRight:
+			moveX = 1;
+			break;
+
+		case MessagePlayerActionType::ShootUpLeft:
+			shootX = -1;
+			shootY = -1;
+			break;
+
+		case MessagePlayerActionType::ShootUpRight:
+			shootX = 1;
+			shootY = -1;
+			break;
+
+		case MessagePlayerActionType::ShootDownLeft:
+			shootX = -1;
+			shootY = 1;
+			break;
+
+		case MessagePlayerActionType::ShootDownRight:
+			shootX = 1;
+			shootY = 1;
+			break;
+
+		default:
+			printf( "Invalid Player action: %d\n", (int)client.action.action );
+			break;
+		}
+
+		if( moveX != 0 || moveY != 0 )
+		{
+			const uint8 oldPositionX = client.positionX;
+			const uint8 oldPositionY = client.positionY;
+			client.positionX = clamp( client.positionX + moveX, 0, 16 );
+			client.positionY = clamp( client.positionY + moveY, 0, 16 );
+
+			printf( "Move Player %d from (%d, %d) to (%d, %d)\n", client.playerId, oldPositionX, oldPositionY, client.positionX, client.positionY );
+		}
+		else if( shootX != 0 || shootY != 0 )
+		{
+			ShootState shoot;
+			shoot.round				= m_round;
+			shoot.playerId			= client.playerId;
+			shoot.startPositionX	= client.positionX;
+			shoot.startPositionY	= client.positionY;
+
+			int positionX = shoot.startPositionX;
+			int positionY = shoot.startPositionY;
+			while( positionX > 0 && positionX < 15 &&
+				positionY > 0 && positionY < 15 )
+			{
+				for( std::map< uint32, ClientState >::iterator it = m_clients.begin(); it != m_clients.end(); ++it )
+				{
+					ClientState& target = it->second;
+					if( target.playerId == client.playerId ||
+						target.positionX != positionX ||
+						target.positionY != positionY )
+					{
+						continue;
+					}
+
+					target.pKiller = &client;
+				}
+
+				positionX += shootX;
+				positionY += shootY;
+			}
+
+			shoot.endPositionX	= positionX;
+			shoot.endPositionY	= positionY;
+
+			m_shoots.push_back( shoot );
+
+			printf( "Player %d shoot from (%d, %d) to (%d, %d)\n", client.playerId, shoot.startPositionX, shoot.startPositionY, shoot.endPositionX, shoot.endPositionY );
 		}
 	}
 

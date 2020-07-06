@@ -34,7 +34,7 @@ namespace GamesAcademy
 
 	bool Client::create()
 	{
-		if( !m_graphics.create( 1280u, 720u, "Font" ) )
+		if( !m_graphics.create( 1280u, 720u, "Client" ) )
 		{
 			return false;
 		}
@@ -216,6 +216,11 @@ namespace GamesAcademy
 			);
 		}
 
+		for( uint8 shootIndex = 0u; shootIndex < gameState.shootCount; ++shootIndex )
+		{
+			renderShoot( gameState.shoots[ shootIndex ] );
+		}
+
 		if( pPlayer != nullptr )
 		{
 			const float playerX = getCellPosition( pPlayer->positionX );
@@ -265,6 +270,37 @@ namespace GamesAcademy
 		}
 
 		m_graphics.endFrame();
+	}
+
+	void Client::renderShoot( const MessageShootState& shoot )
+	{
+		const float directionX		= -sgn( float( shoot.startPositionX ) - shoot.endPositionX );
+		const float directionY		= -sgn( float( shoot.startPositionY ) - shoot.endPositionY );
+		const float startX			= getCellPosition( shoot.startPositionX ) + (directionX * m_halfSize) + m_halfSize;
+		const float startY			= getCellPosition( shoot.startPositionY ) + (directionY * m_halfSize) + m_halfSize;
+		const float endX			= getCellPosition( shoot.endPositionX ) + m_halfSize;
+		const float endY			= getCellPosition( shoot.endPositionY ) + m_halfSize;
+		const float offsetX			= directionX * m_halfSize;
+		const float offsetY			= directionY * m_halfSize;
+
+		if( directionX != directionY )
+		{
+			m_graphics.drawTriangle(
+				startX, startY + offsetY,
+				endX, endY,
+				startX + offsetX, startY,
+				0xff1144ddu
+			);
+		}
+		else
+		{
+			m_graphics.drawTriangle(
+				startX, startY + offsetY,
+				startX + offsetX, startY,
+				endX, endY,
+				0xff1144ddu
+			);
+		}
 	}
 
 	float Client::getCellPosition( uint8 pos ) const
